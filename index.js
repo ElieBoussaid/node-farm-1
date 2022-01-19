@@ -2,12 +2,12 @@
 const fs = require('fs');
 
 
-const hello = 'Salamo 3alikom'; 
 
-console.log(hello);
+const textIn = fs.readFileSync('./txt/input.txt' ,'utf-8' );
 
-const NodeTest = 'test node'; 
+console.log(textIn);
 
-console.log(NodeTest);
+const textOut = `haha ben haha is a test ${textIn}  is date ${Date.now()}`;
 
-console.log(fs);
+fs.writeFileSync('./txt/mehdiOutput.txt' , textOut);
+console.log('File was written');
