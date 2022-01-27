@@ -11,25 +11,36 @@ const url = require('url');
 
 
 
-// const textIn = fs.readFileSync('./txt/input.txt' ,'utf-8' );
-
-// console.log(textIn);
-
-// const textOut = `haha ben haha is a test ${textIn}  is date ${Date.now()}`;
-
-// fs.writeFileSync('./txt/mehdiOutput.txt' , textOut);
-// console.log('File was written');
 
 
 
-//  Sync reading 
-// const textSync = fs.readFile('./txt/inpute.txt' ,'utf-8' , (err, data) => {
 
-// if (err) return console.log('error');
+// Project Data 
 
-// console.log(data);
+ const productTemplate = fs.readFileSync(`${__dirname}/templates/product-template.html` ,'utf-8' );
 
-// }); 
+ const productsDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json` ,'utf-8' );
+
+// This an Array of products as Objects 
+const productsDataJs = JSON.parse(productsDataJSON);
+
+
+
+
+const templateFiller = function(productId) {
+
+const filledProductTemplate = productTemplate
+                                             .replaceAll('{#ProductImage}', productsDataJs[productId].image)
+                                             .replaceAll('{#ProductPrice}' , productsDataJs[productId].price)
+                                             .replaceAll('{#ProductDescription}' , productsDataJs[productId].description)  
+                                             ;
+
+
+return filledProductTemplate;
+
+}; 
+
+
 
 
 
@@ -38,49 +49,74 @@ const url = require('url');
 
 // server 
 
-const apiData = fs.readFileSync('./dev-data/data.json' ,'utf-8' );
-
-
 const server = http.createServer((request , response) => {
 
     const requestedUrl = request.url; 
+    const parsedURrl = url.parse(requestedUrl , true); 
+    const requestedId = parsedURrl.query.id;
+   
 
+    
+     
+
+    
+   
+
+    
     // Router 
+
+    // Index Route
     if(requestedUrl === '/' || requestedUrl === '/overview' ) {
 
         response.end('Index');
 
-    }  else if ( requestedUrl === '/article-One'  ) {
+        
 
-        response.end('Page of Article One');
+    }
 
-    }  else if ( requestedUrl === '/API'  ) {
+
+  // Products Routes
+    else if ( parsedURrl.pathname === '/product'  ) {
 
         response.writeHead(200, {
 
-            'Content-Type': 'application/json', 
+            'Content-Type': 'text/html' 
             
-          });
+          }); 
+          
+        
+       
+    
+          
+        response.end(templateFiller(requestedId));
 
-          response.end(apiData);
+    }
 
-    } else {
+   
+// Not Found Route
+    else {
 
 
         response.writeHead(404, {
 
-            'Content-Type': 'text/html', 
-            'My-Own_header': 'Hi Hi Hiiii' 
-
+            'Content-Type': 'text/html' 
+            
           }); 
           
-        response.end('<h1>Error 404 : page not found</h1> <h2>Error Subtitle : Hak ya Hak</h2>');
+        response.end('Not Found');
 
     }
+    
+
+  
     
 } );
 
 
 // Start server : 
-server.listen(8000 , '127.0.0.1' , () => { console.log('Serever started and listening');
-})
+server.listen(8000 , '127.0.0.1' , () => { console.log('Server started and listening');
+});
+
+
+
+
