@@ -19,6 +19,11 @@ const url = require('url');
 
  const productTemplate = fs.readFileSync(`${__dirname}/templates/product-template.html` ,'utf-8' );
 
+
+ const overViewTemplate = fs.readFileSync(`${__dirname}/templates/overview.html` ,'utf-8' );
+
+ const productCard = fs.readFileSync(`${__dirname}/templates/product-card--template.html` ,'utf-8' );
+
  const productsDataJSON = fs.readFileSync(`${__dirname}/dev-data/data.json` ,'utf-8' );
 
 // This an Array of products as Objects 
@@ -28,7 +33,7 @@ const productsIDs = productsDataJs.map(productObject => productObject.id );
 
 
 
-const templateFiller = function(productId) {
+const templateFiller = function(productId , templateToFille) {
 
   let notOrganic = ''; 
 
@@ -40,14 +45,15 @@ const templateFiller = function(productId) {
   };
 
 
-const filledProductTemplate = productTemplate
+const filledTemplate = templateToFille  .replaceAll('{#ProductId}', productsDataJs[productId].id)
+                                             .replaceAll('{#ProductName}', productsDataJs[productId].productName)
                                              .replaceAll('{#ProductImage}', productsDataJs[productId].image)
                                              .replaceAll('{#ProductPrice}' , productsDataJs[productId].price)
                                              .replaceAll('{#ProductDescription}' , productsDataJs[productId].description)
                                              .replaceAll('{#not-organic}' , notOrganic)  
                                              ;
 
-return filledProductTemplate;
+return filledTemplate;
 
 }; 
 
@@ -81,9 +87,27 @@ const server = http.createServer((request , response) => {
     // Index Route
     if(requestedUrl === '/' || requestedUrl === '/overview' ) {
 
-        response.end('Index');
+      
+      
+        response.writeHead(200, {
 
-        
+          'Content-Type': 'text/html' 
+          
+        }); 
+  
+       let productsCardsHTML = ''; 
+
+     
+    
+
+       productsDataJs.forEach( (productObject, index) => {
+         
+        productsCardsHTML = productsCardsHTML + templateFiller(index,productCard); 
+          
+       });
+
+
+       response.end(overViewTemplate.replace('{#ProductsCardsPlace}', productsCardsHTML));
 
     }
 
@@ -102,7 +126,7 @@ const server = http.createServer((request , response) => {
         
      if (productsIDs.includes(requestedId)) {
 
-      response.end(templateFiller(requestedId));
+      response.end(templateFiller(requestedId,productTemplate));
 
       } else {
 
