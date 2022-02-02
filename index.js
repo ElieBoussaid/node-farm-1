@@ -12,9 +12,6 @@ const url = require('url');
 
 
 
-
-
-
 // Project Data 
 
  const productTemplate = fs.readFileSync(`${__dirname}/templates/product-template.html` ,'utf-8' );
@@ -32,6 +29,8 @@ const productsIDs = productsDataJs.map(productObject => productObject.id );
 
 
 
+
+// Function that fills HTML templates 
 
 const templateFiller = function(productId , templateToFille) {
 
@@ -58,7 +57,7 @@ return filledTemplate;
 }; 
 
 
-
+// FIN - Function that fills HTML templates 
 
 
 
