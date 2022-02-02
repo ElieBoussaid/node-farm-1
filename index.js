@@ -12,6 +12,19 @@ const url = require('url');
 
 
 
+// Slugify 3rd party modules 
+
+const slugify = require('slugify');
+
+// My Own Modules 
+const cl = require('./modules/cl.js');
+// Test of My Module
+cl('Moha');
+cl('HAHAH');
+// FIN - Test of My Module
+
+
+
 // Project Data 
 
  const productTemplate = fs.readFileSync(`${__dirname}/templates/product-template.html` ,'utf-8' );
