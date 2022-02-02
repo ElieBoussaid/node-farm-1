@@ -17,10 +17,10 @@ const url = require('url');
 const slugify = require('slugify');
 
 // My Own Modules 
-const cl = require('./modules/cl.js');
+const clog = require('./modules/cl.js');
 // Test of My Module
-cl('Moha');
-cl('HAHAH');
+// clog('Moha');
+// clog('HAHAH');
 // FIN - Test of My Module
 
 
@@ -76,6 +76,21 @@ return filledTemplate;
 
 
 
+
+const productsSlugsArray = productsDataJs.map( productObject => {
+  
+  const productSlug = slugify(productObject.productName , {lower: true, replacement: '_'});
+
+  productObject.slug = productSlug; 
+
+  return  productSlug;
+  
+  
+});
+
+
+clog(productsSlugsArray);
+
 // server 
 
 const server = http.createServer((request , response) => {
@@ -83,8 +98,12 @@ const server = http.createServer((request , response) => {
     const requestedUrl = request.url; 
     const parsedURrl = url.parse(requestedUrl , true); 
     const requestedId = ((parsedURrl.query.id)*1);
+
+
+    // Link doit etre comme ça http://127.0.0.1:8000/product?slug=hahah
+    const requestedProductSlug = (parsedURrl.query.slug);
     
-      
+      clog(parsedURrl);
 
     
      
@@ -135,19 +154,24 @@ const server = http.createServer((request , response) => {
           }); 
           
   
-        
+        // Calling products with IDs
      if (productsIDs.includes(requestedId)) {
 
       response.end(templateFiller(requestedId,productTemplate));
 
-      } else {
+      }  else if (productsSlugsArray.includes(requestedProductSlug)) {
 
+          response.end(requestedProductSlug);
+    
+          } else {
+    
+    
+            response.end('<h1> Product Not found </h1>');
+         
+    
+          }
 
-        response.end('<h1> Product Not found </h1>');
-     
-
-      }
-          
+       //  FIN - Calling products with Slugs 
         
 
     }
